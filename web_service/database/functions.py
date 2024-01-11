@@ -552,6 +552,7 @@ def remove_user_cart(user_id):
                 user_id,
             ),
         )
+        db.commit()
         if stat:
             print("success on removing cart items ", user_id)
             return {'status': "success"}

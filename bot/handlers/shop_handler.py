@@ -167,6 +167,7 @@ async def profile_command_handler(message: types.Message, state: FSMContext):
 async def handle_show_menu(call: CallbackQuery, state: FSMContext):
     # select item 
     _, userId = call.data.split('|')
+    userId = userId if userId else call.from_user.id
     keyboard =  inline_keyboards.myProfileInlines(userId)
     photoUrl = os.environ.get("APP_URL") + '/images/logo/zergawLogo.jpg'
     media = types.InputMediaPhoto(media=photoUrl, caption=call.message.caption)

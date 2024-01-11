@@ -280,7 +280,18 @@ async def got_payment(message: types.Message):
         who_accepts = await fetch_who_accepts(order_id_uuid)
     
     delivery_person_detail = await get_delivery_profile(who_accepts[0]['delivery_guy_id'])
+    dp = delivery_person_detail[0]
     print("got delivery_person_detail: ", delivery_person_detail)
-    msg = "Delivery person Found.\nHere is information about your delivery person: "
-        
+    msg = f"""<b>✅Delivery person Found.\n👤<u>Here is information about your delivery person:</u>\n
+    ➖ First Name: {dp['firstName']}
+    ➖ Last Name: {dp['lastName']}
+    ➖ Phone Number: {dp['phoneNumber']} """
+    await message.answer_photo(photo=dp['photoURL'], caption=msg, parse_mode='HTML')
     
+    await message.answer("After you order has been delivered, make sure you click on `order completed`", reply_markup=inline_keyboards.order_completed)
+
+
+
+@checkout_router.callback_query(lambda c: c.data.startswith('order_completed_inline') )
+async def succes_delivery(call: CallbackQuery, state: FSMContext ):
+    await call.message.answer(text="Thanks for the Confirmation.🙏, have a nice day")

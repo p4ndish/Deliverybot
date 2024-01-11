@@ -32,10 +32,17 @@ order_completed = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(te
 async def inline_providers():
     companies = await get_providers()
     print("snippet, ",companies[0])
-    service_providers_inline_keyboard = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text=f"{company['product_service_provider']}", callback_data=f"service_providers|{company['product_service_provider']}")] for company in companies 
-    ])
-    return service_providers_inline_keyboard
+    keyboard = InlineKeyboardBuilder()
+    for company in companies :
+        keyboard.row(
+            InlineKeyboardButton(text=f"{company['product_service_provider']}", callback_data=f"service_providers|{company['product_service_provider']}")
+        )
+    keyboard.row(InlineKeyboardButton(text="↩️ Back To Menu", callback_data=f"show_Mainmenu"))
+    # service_providers_inline_keyboard = InlineKeyboardMarkup(inline_keyboard=[
+    #         [InlineKeyboardButton(text=f"{company['product_service_provider']}", callback_data=f"service_providers|{company['product_service_provider']}")] 
+    # ])
+    
+    return keyboard.as_markup()
 
 # service_providers_inline_keyboard = await inline_providers()
 previous_menu_btn = InlineKeyboardButton(text="<<Prev", callback_data="paginate|backward")
@@ -166,6 +173,9 @@ async def show_cart_inline(user_id, indicator):
     )
     builder.add(
         InlineKeyboardButton(text="Clear Cart Items 🗑", callback_data=f"empty_cart|{user_id}", resize_keyboar=True, one_time_keyboard=True)
+    )
+    builder.row(
+        InlineKeyboardButton(text="↩️ Back To Menu", callback_data=f"show_Mainmenu")
     )
     return builder.as_markup()
     # print('showing cart items:', cart_items)

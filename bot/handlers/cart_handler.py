@@ -77,5 +77,5 @@ async def empty_cart_route(call: CallbackQuery, state: FSMContext):
     image = prepare_image_url(url)
     mainMenu = inline_keyboards.mainMenu(call.message.from_user.id)
     await call.message.delete()
-    await call.message.answer_photo(photo=image, reply_markup=mainMenu)
+    await call.message.edit_media(photo=image, reply_markup=mainMenu)
     
