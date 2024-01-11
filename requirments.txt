@@ -1,0 +1,8 @@
+python-dotenv
+aiogram 
+requests 
+aiogram-widgets
+flask
+SQLAlchemy
+Jinja2
+flask-sqlalchemy

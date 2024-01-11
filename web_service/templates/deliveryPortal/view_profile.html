@@ -1,0 +1,24 @@
+{% extends "deliveryPortal/base.html" %}
+{%block css_url %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/view.css') }}"
+{% endblock %}
+
+{%block body  %}
+<div id="algn">
+    <div id="card">
+        <div id="upper-bg">
+            <img src="/images/users_image/{{ user_data['user_id'] }}.jpg" alt="profile-pic" class="profile-pic">
+        </div>
+        <div id="lower-bg">
+          <div class="text">
+            <p class="name">{{ user_data['firstName']}}</p>
+            <p class="title">{{ user_data['phoneNumber']}}</p>
+          </div>
+          
+          
+          
+        </div>
+    </div>
+    </div>
+    
+{% endblock %}
