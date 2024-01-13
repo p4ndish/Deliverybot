@@ -71,8 +71,8 @@ async def process_callback_pagination(callback_query: types.CallbackQuery):
 
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="🚚 Order Now ", callback_data=f"order_now|{product_id}")],
-        [InlineKeyboardButton(text=f"Add Peice ➕", callback_data=f"increment|{1}|{product_id}|{service_provider}" ), ],
-        [InlineKeyboardButton(text=" Add To Cart 🛒" , callback_data=f"add_to_cart|{product_id}")],
+        [InlineKeyboardButton(text=f"Add Peice ➕", callback_data=f"increment|0|{product_id}|{service_provider}" ), ],
+        [InlineKeyboardButton(text=" Add To Cart 🛒" , callback_data=f"add_to_cart|{product_id}|1")],
         [InlineKeyboardButton(text="🔙 Go Back", callback_data=f"service_providers|{service_provider}")]
     ])
     # special_characters = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']

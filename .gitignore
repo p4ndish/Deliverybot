@@ -1,0 +1,5 @@
+.env
+__pycache__
+-- SQLite.sql
+web_service/images/users_image/*jpg
+

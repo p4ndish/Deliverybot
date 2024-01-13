@@ -11,7 +11,7 @@ from bot.utils.backend_request import *
 from bot.utils.shared_functions import refresh_login_callback, save_user_image, send_inline_providers
 from bot.utils.states import RegisterDelivery, Shop
 from bot.bot_instance import bot
-from aiogram.types import MenuButtonWebApp, MenuButtonCommands
+from aiogram.types import MenuButtonWebApp, MenuButtonCommands, MenuButtonCommands, BotCommand
 from aiogram.types.web_app_info import WebAppInfo
 
 
@@ -151,6 +151,8 @@ async def get_location_handler(message: types.Message, state: FSMContext):
 
 @delivery_router.callback_query(lambda c: c.data == "freeGuy")
 async def handle_freeguy(call: CallbackQuery, state: FSMContext):
+    await bot.set_my_commands( commands=[BotCommand(command='starta', description='start overrrr'), BotCommand(command='menu', description='display menu'), BotCommand(command='profile', description='show profile page')])
+    await bot.set_chat_menu_button(chat_id=call.message.from_user.id,menu_button=MenuButtonCommands())
     # state_data = await state.get_data()
     # print("state_data: ", state_data)
     # if not state_data:
@@ -162,7 +164,7 @@ async def handle_freeguy(call: CallbackQuery, state: FSMContext):
     # print("aren't they the same", call.message.from_user.id, call.id)
 
     state_data = await state.get_data()
-    userId = state_data["userId"]
+    userId = state_data["userId"] if state_data else call.from_user.id
     result = await is_user_working(userId)
     is_offline = await is_user_offline(userId)
     result = result[0]
