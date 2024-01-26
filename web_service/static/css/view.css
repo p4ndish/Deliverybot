@@ -132,3 +132,15 @@ body{
     padding: 0 10px;
     display: inline;
 }
+
+
+.form-cont {
+    display: flex;
+    justify-content: center;
+}
+
+.form-cont button {
+    margin: 4px;
+    height: 40px;
+    width: 80px;
+}

@@ -216,7 +216,7 @@ async def got_payment(message: types.Message, state: FSMContext):
     """
     await message.answer_photo(photo=dp['photoURL'], caption=msg, parse_mode='HTML')
     
-    await message.answer("After you order has been delivered, make sure you click on `order completed`", reply_markup=inline_keyboards.order_completed)
+    await message.answer("After you order has been delivered, make sure you click on `order completed`", reply_markup=inline_keyboards.order_completed(dp['user_id']))
 
 
 
@@ -288,10 +288,18 @@ async def got_payment(message: types.Message):
     ➖ Phone Number: {dp['phoneNumber']} """
     await message.answer_photo(photo=dp['photoURL'], caption=msg, parse_mode='HTML')
     
-    await message.answer("After you order has been delivered, make sure you click on `order completed`", reply_markup=inline_keyboards.order_completed)
+    await message.answer("After you order has been delivered, make sure you click on `order completed`", reply_markup=inline_keyboards.order_completed(dp['user_id']))
+
 
 
 
 @checkout_router.callback_query(lambda c: c.data.startswith('order_completed_inline') )
 async def succes_delivery(call: CallbackQuery, state: FSMContext ):
-    await call.message.answer(text="Thanks for the Confirmation.🙏, have a nice day")
+    _, user_id = call.data.split('|')
+    await call.message.answer(text="Thanks for the Confirmation.🙏, have a nice day", reply_markup=inline_keyboards.rate_user(user_id))
+
+
+@checkout_router.callback_query(lambda c: c.data.startswith('rated_user') )
+async def rated_user_send_message(call: CallbackQuery, state: FSMContext, ):
+    _, user_id = call.data.split("|")
+    await bot.send_message(chat_id=user_id, text="🙌 Good job on completing your job successfully!", )

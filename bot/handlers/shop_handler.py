@@ -156,13 +156,64 @@ async def process_order(call: CallbackQuery, state: FSMContext):
 
 
 
-@shop_router.message(Command("profile"))
+@shop_router.message(Command("profile"), )
 async def profile_command_handler(message: types.Message, state: FSMContext):
-    keyboard =  inline_keyboards.myProfileInlines(message.from_user.id)
-    photoUrl = os.environ.get("APP_URL") + '/images/logo/zergawLogo.jpg'
-    media = prepare_image_url(photoUrl)
-    await message.answer_photo(photo=media, reply_markup=keyboard)
+    user_state = await state.get_data() 
+    print("user data: ", user_state)
+    if user_state['role'] == 'customer':
+        keyboard =  inline_keyboards.myProfileInlines(message.from_user.id)
+        photoUrl = os.environ.get("APP_URL") + '/images/logo/zergawLogo.jpg'
+        media = prepare_image_url(photoUrl)
+        await message.answer_photo(photo=media, reply_markup=keyboard)
+    else: 
+        data = await state.get_data()
+        userId = data["userId"]
+        keyboard = reply_keyboards.delivery_profile_menu(message.from_user.id)
+
+        await message.answer(text="Edit Your Profile 👇", reply_markup=keyboard)
+
+
+
+
+
+@shop_router.message(Command('menu'))
+async def menuu(message: types.Message, state: FSMContext):
     
+
+    user_state = await state.get_data()
+    if user_state['role'] == 'customer':
+        url = os.environ.get("APP_URL") + '/images/logo/zergawLogo.jpg'
+        print("url for delivery", url)
+        image = prepare_image_url(url)
+        mainMenu = inline_keyboards.mainMenu(message.from_user.id)
+        await message.answer_photo(photo=image, reply_markup=mainMenu)
+    else: 
+        state_data = await state.get_data()
+        userId = state_data["userId"]
+        isWorking = await is_user_working(userId)
+        isWorking = isWorking[0]
+        print("printing result from my status: ", isWorking)
+        is_offline = await is_user_offline(userId)
+        is_offline = is_offline[0]
+        result = await get_delivery_user_status(userId)
+        keyboard = inline_keyboards.delivery_person_menu_keyboard(
+            isWorking["working"], is_offline["is_offline"]
+        )
+        await message.answer(
+            text="<blockquote>Aloha, quick. </blockquote>\n"
+            "<b>Reminder on your what you will do here: \n"
+            "1. If you want to get call first of all \n\t\t "
+            "- you should share your location\n\t\t"
+            "-  Click on\t\t\t <blockquote><u>I am free</u> Button</blockquote>\n\t\t"
+            "2. If you are delivering products to user, please Click on \t\t\t <blockquote><u>am Working</u> Button</blockquote>  </b>",
+            parse_mode="HTML",
+            reply_markup=keyboard,
+        )
+
+        
+        
+
+
 @shop_router.callback_query(lambda c: c.data.startswith('myProfileInline'))
 async def handle_show_menu(call: CallbackQuery, state: FSMContext):
     # select item 

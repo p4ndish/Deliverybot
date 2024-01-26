@@ -26,7 +26,38 @@ def edit_delivery_profile(user_id):
 def view_customer_profile(user_id):
     # user_data = get_delivery_guy_profile(user_id)
     # print(user_id, user_data)
-    return render_template('index.html',)
+    user_data = get_delivery_guy_profile(user_id)
+    user_data = user_data[0]
+    return render_template('deliveryPortal/edit_profile.html',user_data=user_data)
+@delivery.route('/u/profile/edit/<user_id>', methods=['GET'])
+def edit_customer_profile(user_id):
+    # user_data = get_delivery_guy_profile(user_id)
+    # print(user_id, user_data)
+    user_data = get_profile(user_id)
+    print(user_data)
+    # user_data = user_data[0]
+    return render_template('deliveryPortal/edit_profile.html',user_data=user_data)
+
+@delivery.route('/delivery/rate/<user_id>', methods=['GET'])
+def rate_customer_profile(user_id):
+    # user_data = get_delivery_guy_profile(user_id)
+    # print(user_id, user_data)
+    user_data = get_delivery_guy_profile(user_id)
+    user_data = user_data[0]
+    return render_template('deliveryPortal/rating.html',user_data=user_data)
+
+
+@delivery.route('/submit_rating', methods=['POST'])
+def submit_rate__profile():
+    # user_data = get_delivery_guy_profile(user_id)
+    # print(user_id, user_data)
+    # user_data = get_delivery_guy_profile(user_id)
+    # user_data = user_data[0]
+    data =  request.form.get('rating')
+    user_id =  request.form.get('user_id')
+    print(data, user_id)
+    return jsonify({'SUCCESS': True})
+
 
 
 @delivery.route('/delivery/profile/<userid>', methods=['GET'])
@@ -163,3 +194,12 @@ def function_get_delivery_user_status(userid):
         return jsonify({"error": "Internal server error."}), 500
     
 
+@delivery.route("/delivery/exists/<user_id>")
+def check_user_exists(user_id):
+    try:
+        result = does_delivery_exists(user_id)
+        return result, 200
+    except Exception as e:
+        print("error internal ", e)
+        return {}, 500
+    

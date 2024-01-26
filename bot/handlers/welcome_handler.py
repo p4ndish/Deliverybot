@@ -76,14 +76,6 @@ async def handle_register(message : types.Message, state: FSMContext):
 #     print("Edit live location: " )
 #     pass
 
-@welcome_router.message(Command('menu'))
-async def menuu(message: types.Message, state: FSMContext):
-    url = os.environ.get("APP_URL") + '/images/logo/zergawLogo.jpg'
-    print("url for delivery", url)
-    image = prepare_image_url(url)
-    mainMenu = inline_keyboards.mainMenu(message.from_user.id)
-    await message.answer_photo(photo=image, reply_markup=mainMenu)
-
 
 @welcome_router.message(Refresh.get)
 async def refresh_login(message: types.Message, state: FSMContext):

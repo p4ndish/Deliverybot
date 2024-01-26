@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 import requests
 from bot.keyboards import inline_keyboards, reply_keyboards
 from bot.bot_instance import bot 
-from aiogram.types import CallbackQuery, InlineKeyboardButton, Message, MenuButtonCommands, BotCommand
+from aiogram.types import CallbackQuery, InlineKeyboardButton, Message, MenuButtonCommands, BotCommand,BotCommandScopeChat
 from bot.database.functions import create_profile
 from bot.utils.backend_request import user_exists
 # from bot.middlewares.menu_builder_middleware import MenuMiddleware
@@ -91,6 +91,7 @@ async def handle_register_phone_inline_callback(call: CallbackQuery, state: FSMC
     if not user_data:
         await add_to_state_call(call, state)
     check_user = await user_exists(call.from_user.id)
+    print('what do you think: ', check_user)
     if check_user:
         await call.message.answer(text="user already exists! Continue with our service")
     else:
@@ -99,16 +100,17 @@ async def handle_register_phone_inline_callback(call: CallbackQuery, state: FSMC
             await call.message.answer("<b>Sorry something went wrong, Try to provide your location or phone number.</b> \n <b>If the error persists</b> /start <b>over</b>",)
             return
         await save_user_image(call.from_user.id)
-        await call.message.answer("✅Registration successful. You can now Start Purchase goods")
-
+        await call.message.answer("✅Registration successful. You can now Start Purchase goods",reply_markup=types.ReplyKeyboardRemove())
+    
+        
     await state.clear()
     
     # await call.message.answer("Choose your products", reply_markup=)
     await state.set_state(Shop.shopping)
-    await state.update_data(userId=call.message.from_user.id )
+    await state.update_data(userId=call.message.from_user.id,role="customer" )
     # await send_inline_providers(call, FSMContext)
     # setting menu buttons for customers 
-    await bot.set_my_commands( commands=[BotCommand(command='start', description='start over'), BotCommand(command='menu', description='display menu'), BotCommand(command='profile', description='show profile page')])
+    await bot.set_my_commands( commands=[BotCommand(command='start', description='start regular user'), BotCommand(command='menu', description='display menu'), BotCommand(command='profile', description='show profile page')])
     await bot.set_chat_menu_button(chat_id=call.message.from_user.id,
             menu_button=MenuButtonCommands()
         )
@@ -154,13 +156,13 @@ async def get_location_handler(message: types.Message, state: FSMContext):
             await message.answer("<b>Sorry something went wrong, Try to provide your location or phone number.</b> \n <b>If the error persists</b> /start <b>over</b>",)
             return
         await save_user_image(message.from_user.id)
-        await message.answer("✅Registration successful. You can now Start Purchase goods")
+        await message.answer("✅Registration successful. You can now Start Purchase goods",reply_markup=types.ReplyKeyboardRemove())
 
     await state.clear()
     
     # await message.answer("Choose your products", reply_markup=)
     await state.set_state(Shop.shopping)
-    await state.update_data(userId=message.from_user.id )
+    await state.update_data(userId=message.from_user.id, role="customer" )
     # await send_inline_providers( FSMContext)
     # setting menu buttons for customers 
     await bot.set_my_commands( commands=[BotCommand(command='start', description='start over'), BotCommand(command='menu', description='display menu'), BotCommand(command='profile', description='show profile page')])

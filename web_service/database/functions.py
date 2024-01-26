@@ -865,3 +865,22 @@ def does_user_exists(user_id):
         print("error on adding delivery person to orders: ", e)
         return {}
     
+def does_delivery_exists(user_id):
+    db = get_db()
+    cur = db.cursor()
+    cur.row_factory = sqlite3.Row
+
+    try:
+        stat = cur.execute('SELECT * FROM delivery_person_accounts WHERE user_id = ? ', (user_id,)).fetchone()
+        db.commit()
+        if stat:
+            # Directly use stat as it's a dictionary-like object returned by fetchone()
+            
+            return {'status' : 'success'}
+        else:
+            print("Order not found.")
+            return {}
+    except Exception as e:
+        print("error on adding delivery person to orders: ", e)
+        return {}
+    

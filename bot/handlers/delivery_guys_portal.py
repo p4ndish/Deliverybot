@@ -104,7 +104,6 @@ async def get_phone_number(message: types.Message, state: FSMContext):
     F.content_type.in_({"location", "LOCATION"}), RegisterDelivery.location
 )
 async def get_location_handler(message: types.Message, state: FSMContext):
-    ReplyKeyboardRemove(remove_keyboard=True)
     print("now on delivery location")
     user_location = message.location
 
@@ -123,35 +122,66 @@ async def get_location_handler(message: types.Message, state: FSMContext):
     await state.update_data(created_at=date)
     user_data = await state.get_data()
     # register user to db
-    success = await register_delivery_profile(user_data)
-    print(success == 201)
-    print(dir(success))
-    if success.status_code == 201:
-        await save_user_image(message.from_user.id)
-        await message.delete()
-        await state.clear()
+    is_registered = await delivery_exists(message.from_user.id)
+    if not is_registered:
+    
+        success = await register_delivery_profile(user_data)
+        print(success == 201)
+        print(dir(success))
+        if success.status_code == 201:
+            await save_user_image(message.from_user.id)
+            await message.delete()
+            await state.clear()
+            await bot.set_my_commands( commands=[BotCommand(command='start', description='start delivery user'), BotCommand(command='menu', description='display menu'), BotCommand(command='profile', description='show profile page')])
+            await bot.set_chat_menu_button(chat_id=message.from_user.id,
+                    menu_button=MenuButtonCommands()
+                )
 
-        inline_job_options = inline_keyboards.delivery_person_menu_keyboard(
-            False, False
+            inline_job_options = inline_keyboards.delivery_person_menu_keyboard(
+                False, False
+            )
+            await message.answer(
+                text="<blockquote> ✅Registration successful. </blockquote>\n"
+                "<b>Here is what will happen: \n"
+                "1. If you want to get call first of all \n\t\t "
+                "- you should share your location\n\t\t"
+                "-  Click on\t\t\t <blockquote><u>I am free</u> Button</blockquote>\n\t\t"
+                "2. If you are delivering products to user, please Click on \t\t\t <blockquote><u>am Working</u> Button</blockquote>  </b>",
+                parse_mode="HTML",
+                reply_markup=inline_job_options,
+            )
+    else: 
+        state_data = await state.get_data()
+        userId = state_data["userId"]
+        isWorking = await is_user_working(userId)
+        isWorking = isWorking[0]
+        print("printing result from my status: ", isWorking)
+        is_offline = await is_user_offline(userId)
+        is_offline = is_offline[0]
+        result = await get_delivery_user_status(userId)
+        keyboard = inline_keyboards.delivery_person_menu_keyboard(
+            isWorking["working"], is_offline["is_offline"]
         )
         await message.answer(
-            text="<blockquote> ✅Registration successful. </blockquote>\n"
-            "<b>Here is what will happen: \n"
+            text="<blockquote> Welcome Back. </blockquote>\n"
+            "<b>Reminder on your what you will do here: \n"
             "1. If you want to get call first of all \n\t\t "
             "- you should share your location\n\t\t"
             "-  Click on\t\t\t <blockquote><u>I am free</u> Button</blockquote>\n\t\t"
             "2. If you are delivering products to user, please Click on \t\t\t <blockquote><u>am Working</u> Button</blockquote>  </b>",
             parse_mode="HTML",
-            reply_markup=inline_job_options,
+            reply_markup=keyboard,
         )
 
         # await state.set_state(.shopping)
-        await state.update_data(userId=message.from_user.id)
+    # await message.answer('test remove', reply_markup=ReplyKeyboardRemove(remove_keyboard=True))
+
+    await state.update_data(userId=message.from_user.id, role='deliveryGuy')
 
 
 @delivery_router.callback_query(lambda c: c.data == "freeGuy")
 async def handle_freeguy(call: CallbackQuery, state: FSMContext):
-    await bot.set_my_commands( commands=[BotCommand(command='starta', description='start overrrr'), BotCommand(command='menu', description='display menu'), BotCommand(command='profile', description='show profile page')])
+    await bot.set_my_commands( commands=[BotCommand(command='start', description='start over'), BotCommand(command='menu', description='display menu'), BotCommand(command='profile', description='show profile page')])
     await bot.set_chat_menu_button(chat_id=call.message.from_user.id,menu_button=MenuButtonCommands())
     # state_data = await state.get_data()
     # print("state_data: ", state_data)
@@ -342,6 +372,7 @@ async def delete_profile_function(message: types.Message, state: FSMContext):
     print("printing state ", state_data)
     userId = state_data["userId"]
     result = await delete_delivery_profile(userId)
+    print(result)
     result = result[0]
     if result:
         await message.answer("profile deleted!")
@@ -403,4 +434,6 @@ async def accepted_order_function(call: CallbackQuery, state: FSMContext):
 async def reject_order(call: CallbackQuery, state: FSMContext):
     # remove the delivery guy id from the orders
     # await call.message.delete()
+    bot.answer_callback_query(call.id, "Job skipped.")
+        
     pass 

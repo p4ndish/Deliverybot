@@ -217,6 +217,24 @@ async def user_exists(user_id):
         response.raise_for_status()  
         
         result = response.json()
+        print('response from user exists: ', result)
+        # result = result[0]
+        return result
+    except requests.exceptions.RequestException as e:
+        print("Error on adding to cart:", e)
+        return None
+    
+
+async def delivery_exists(user_id):
+    endpoint = f"/delivery/exists/{user_id}"
+    
+    try:
+        response = requests.get(url + endpoint)
+
+        response.raise_for_status()  
+        
+        result = response.json()
+        print('response from user exists: ', result)
         # result = result[0]
         return result
     except requests.exceptions.RequestException as e:

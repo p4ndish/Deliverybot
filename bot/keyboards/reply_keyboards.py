@@ -1,11 +1,11 @@
 import os
-from aiogram.types import KeyboardButton,ReplyKeyboardMarkup, MenuButtonCommands
+from aiogram.types import KeyboardButton,ReplyKeyboardMarkup, MenuButtonCommands,ReplyKeyboardRemove
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, ButtonType
 from aiogram.types.web_app_info import WebAppInfo
 from aiogram.types.web_app_data import WebAppData
 from dotenv import load_dotenv
 load_dotenv()
-
+ReplyKeyboardRemove()
 APP_URL = os.environ.get('APP_URL')
 reg_phone = KeyboardButton(text="Get My Number", request_contact=True )
 reg_location = KeyboardButton(text="Get My Location", request_location=True)

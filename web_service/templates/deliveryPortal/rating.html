@@ -1,0 +1,82 @@
+{% extends "deliveryPortal/base.html" %}
+
+
+{%block body  %}
+<div id="algn">
+    <div id="card">
+        <div id="upper-bg">
+            <img src="/images/users_image/{{ user_data['user_id'] }}.jpg" alt="profile-pic" class="profile-pic">
+        </div>
+        <div id="lower-bg">
+          <div class="text">
+            <p class="name">{{ user_data['firstName']}}</p>
+            <p class="title">{{ user_data['phoneNumber']}}</p>
+          </div>
+
+          <div class="content-rating">
+            
+                <div class="content-rating-title">
+                    <p>Rate your delivery person</p>
+                </div>
+                
+                
+                <div class="content-rating-starts">
+                    <form id="ratingForm">
+                        <div class="rate">
+                            <input type="radio" id="star5" name="rate" value="5" />
+                            <label for="star5" title="text">5 stars</label>
+                            <input type="radio" id="star4" name="rate" value="4" />
+                            <label for="star4" title="text">4 stars</label>
+                            <input type="radio" id="star3" name="rate" value="3" />
+                            <label for="star3" title="text">3 stars</label>
+                            <input type="radio" id="star2" name="rate" value="2" />
+                            <label for="star2" title="text">2 stars</label>
+                            <input type="radio" id="star1" name="rate" value="1" />
+                            <label for="star1" title="text">1 star</label>
+                        </div>
+                        <br>
+                        <h5 id="result" style="color: green; display:flex; justify-content: center;" ></h5>
+
+                        <button  type="button" onclick="submitRating()" style="margin-left: 30px;">Submit Rating</button>
+                    </form>
+                    
+
+                </div>
+            </div>
+          
+          
+          
+        </div>
+    </div>
+    </div>
+    <script>
+        function submitRating() {
+            var rating = document.querySelector('input[name="rate"]:checked');
+            let tg = Telegram.WebApp;
+    
+            if (rating) {
+                var formData = new FormData();
+                formData.append("rating", rating.value);
+                formData.append("user_id","{{ user_data['user_id']}}" );
+    
+                fetch('/submit_rating', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Handle the response from the server if needed
+                    console.log(data);
+                    document.getElementById('result').innerHTML = "Thanks for taking the time";
+                    
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            } else {
+                alert("Please select a rating before submitting.");
+            }
+        }
+    </script>
+    
+{% endblock %}

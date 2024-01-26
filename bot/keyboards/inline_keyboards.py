@@ -22,11 +22,17 @@ reg_phone = InlineKeyboardButton(text="Get My Number", callback_data="get_my_num
 reg_location = InlineKeyboardButton(text="Get My Location", callback_data="get_my_location_inline")
 skip_location = InlineKeyboardButton(text="Skip Location", callback_data="skip_location_inline")
 cancel_checkout = InlineKeyboardButton(text="Cancel", callback_data="cancel_checkout_inline")
-order_completed = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Order Completed", callback_data="order_completed_inline")]])
+
+def order_completed(user_id):
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Order Completed"  ,callback_data=f"order_completed_inline|{user_id}")]])
+    return keyboard
 
 
-
-
+def rate_user(user_id):
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="Rate Your Delivery Person", web_app=WebAppInfo(url=BASE_URL+'/delivery/rate/'+user_id))]
+    ])
+    return keyboard
 
 # inline menu buttons
 async def inline_providers():
