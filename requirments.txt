@@ -1,5 +1,4 @@
 python-dotenv
-aiogram 
 requests 
 aiogram-widgets
 flask
